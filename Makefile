@@ -1,5 +1,6 @@
 #bm
-CROSSCOMP_TOOLCHAIN_DIR = /usr/share/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-elf
+# CROSSCOMP_TOOLCHAIN_DIR = /usr/share/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-elf
+CROSSCOMP_TOOLCHAIN_DIR = /usr/share/arm-gnu-toolchain-15.2.rel1-x86_64-aarch64-none-elf
 ETL_INSTALL_DIR = lib/etl-20.39.4
 
 SRC_DIR = src/platform/baremetal
@@ -23,7 +24,7 @@ LINKFLAG = -lc -lg -lm
 #will not work without them
 MANDATORY_COMP_FLAGS =  -ffreestanding -nostdinc -nostdlib -nostartfiles -mstrict-align -fno-exceptions -fpermissive
 COMPFLAGS = $(MANDATORY_COMP_FLAGS) -Wall -O$(OPTIMIZE_LEVEL) $(OP_FLAG) -ftree-vectorize -march=armv8-a+simd -mcpu=cortex-a72 -mtune=cortex-a72 -falign-functions=32 -falign-loops=32
-INCLFLAGS = -I$(CROSSCOMP_TOOLCHAIN_DIR)/aarch64-none-elf/include -I$(ETL_INSTALL_DIR)/include -I$(CROSSCOMP_TOOLCHAIN_DIR)/lib/gcc/aarch64-none-elf/13.3.1/include -I./include -I./include/common
+INCLFLAGS = -I$(CROSSCOMP_TOOLCHAIN_DIR)/aarch64-none-elf/include -I$(ETL_INSTALL_DIR)/include -I$(CROSSCOMP_TOOLCHAIN_DIR)/lib/gcc/aarch64-none-elf/15.2.1/include -I./include -I./include/common
 GCCFLAGS = $(LINKLIBS) $(COMPFLAGS) $(INCLFLAGS)
 GCCPATH = $(CROSSCOMP_TOOLCHAIN_DIR)/bin
 
@@ -41,7 +42,7 @@ $(OBJ_DIR)/%.o: $(SRC_COMM_DIR)/%.cc
 	mkdir -p $(OBJ_DIR)
 	$(GCCPATH)/aarch64-none-elf-g++ $(GCCFLAGS) -c $< -o $@ $(LINKFLAG)
 
-kernel8.img: $(OBJ_DIR)/boot.o $(OFILES)
+kernel8.img: $(OBJ_DIR)/boot.o $(OFILES) | build_folder
 	$(GCCPATH)/aarch64-none-elf-ld $(LINKLIBS) -nostdlib $(OBJ_DIR)/boot.o $(OFILES) -T $(CFG_DIR)/link.ld -o $(OBJ_DIR)/kernel8.elf $(LINKFLAG) -Map=build/bm/output.map
 	$(GCCPATH)/aarch64-none-elf-objcopy -O binary $(OBJ_DIR)/kernel8.elf $(OBJ_DIR)/img/kernel8.img
 
@@ -52,15 +53,8 @@ clean:
 build:
 	mkdir -p $(OBJ_DIR)/img
 
-#linux
-deep-clean-l:
-	rm -rf build && mkdir -p $(OBJ_DIR)/img;
-
-scratch-build-l:
-	cd build;cmake ..;make;
-
-run:
-	build/$(PROJ_NAME) $(VIDEO_NAME).mpg;
+build_folder:
+	mkdir -p build/bm/img
 
 .PHONY: rebuild
 rebuild:
