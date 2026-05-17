@@ -6,14 +6,14 @@
 #include "gpio.h"
 #include "mmio.h"
 
-constexpr int STR_SZ = 1020;
+constexpr int32_t STR_SZ = 1020;
 
 class MiniUart {
- public:
+public:
   MiniUart();
-  void writeText(const etl::string<STR_SZ>& buffer);
+  void writeText(const etl::string<STR_SZ> &buffer);
 
- private:
+private:
   enum {
     AUX_BASE = reg::PERIPHERAL_BASE + 0x215000,
     AUX_IRQ = AUX_BASE,
@@ -35,13 +35,13 @@ class MiniUart {
   };
 
   unsigned char outputRingBuffer[UART_MAX_QUEUE];
-  unsigned int outputWriteIdx = 0;
-  unsigned int outputReadIdx = 0;
+  uint32_t outputWriteIdx = 0;
+  uint32_t outputReadIdx = 0;
 
   GPIO gpio;
   MMIO mmio;
 
-  uint32_t calcBaudrate(long baud) const;
+  uint32_t calcBaudrate(int64_t baud) const;
 
   bool isOutputQueueEmpty() const;
 
@@ -53,11 +53,11 @@ class MiniUart {
 
   void flushOutput();
 
-  friend MiniUart& operator<<(MiniUart& uart, const char* text) {
+  friend MiniUart &operator<<(MiniUart &uart, const char *text) {
     uart.writeText(etl::string<STR_SZ>(text));
     return uart;
   }
-  friend MiniUart& operator<<(MiniUart& uart, const etl::string<STR_SZ>& text) {
+  friend MiniUart &operator<<(MiniUart &uart, const etl::string<STR_SZ> &text) {
     uart.writeText(text);
     return uart;
   }

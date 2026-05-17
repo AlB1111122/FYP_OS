@@ -4,32 +4,32 @@
 #include "ARMMailbox.h"
 
 class FrameBuffer {
- public:
+public:
   FrameBuffer(bool doubleBufferd = false);
 
   // ways to draw directly to the fb
-  void drawByLine(uint8_t* buffer, int xSz = 1280 * 4, int ySz = 720);
-  void bufferCpy(uint8_t* buffer);
-  void drawPixel(int x, int y, unsigned char attr);
-  void drawPixelRGB(int x, int y, unsigned int colourRGB);
-  void pixelByPixelDraw(int xSrc, int ySrc, uint8_t* src);
+  void drawByLine(uint8_t *buffer, int32_t xSz = 1280 * 4, int32_t ySz = 720);
+  void bufferCpy(uint8_t *buffer);
+  void drawPixel(int32_t x, int32_t y, unsigned char attr);
+  void drawPixelRGB(int32_t x, int32_t y, uint32_t colourRGB);
+  void pixelByPixelDraw(int32_t xSrc, int32_t ySrc, uint8_t *src);
 
   // from babbleberrys project, left in for debug usefullness
-  void drawChar(unsigned char ch, int x, int y, unsigned char attr);
-  void drawString(int x, int y, char* s, unsigned char attr);
+  void drawChar(unsigned char ch, int32_t x, int32_t y, unsigned char attr);
+  void drawString(int32_t x, int32_t y, char *s, unsigned char attr);
 
-  unsigned int getPitch();
-  unsigned int getHeight();
+  uint32_t getPitch();
+  uint32_t getHeight();
   void swapFb();
-  unsigned char* getOffFb();
-  unsigned char* getFb();
+  unsigned char *getOffFb();
+  unsigned char *getFb();
 
- private:
+private:
   const uint32_t MBOX_REQUEST = 0;
-  const uint32_t REQ_CHANNEL = 8;  // Request from ARM for response by VideoCore
+  const uint32_t REQ_CHANNEL = 8; // Request from ARM for response by VideoCore
 
   class VCTag {
-   public:
+  public:
     static constexpr uint32_t MBOX_TAG_SETPOWER = 0x28001;
     static constexpr uint32_t MBOX_TAG_SETCLKRATE = 0x38002;
 
@@ -46,15 +46,15 @@ class FrameBuffer {
   // for use tracking which buffer is displayed when double buffering
   bool secondBuffer = 0;
   static constexpr VCTag VCTag{};
-  static ARMMailbox FB_mailbox;  // want only one instance even if
-                                 // somehow multiple fb get made;
-  unsigned int width;
-  unsigned int height;
-  unsigned int pitch;
-  unsigned int isrgb;  // 7680 pitch
-  unsigned char* fb;
-  unsigned char* baseFb;
-  int getXYOffset(int x, int y);
+  static ARMMailbox FB_mailbox; // want only one instance even if
+                                // somehow multiple fb get made;
+  uint32_t width;
+  uint32_t height;
+  uint32_t pitch;
+  uint32_t isrgb; // 7680 pitch
+  unsigned char *fb;
+  unsigned char *baseFb;
+  int32_t getXYOffset(int32_t x, int32_t y);
   struct FbMailboxReq_t {
     uint32_t size;
     uint32_t request;

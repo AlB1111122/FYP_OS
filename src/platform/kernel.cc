@@ -12,34 +12,33 @@
 #include "pl_mpeg/pl_mpeg.h"
 #include "timer.h"
 
-int constexpr WIN_HEIGHT = 720;
-int constexpr WIN_WIDTH = 1280;
-int constexpr N_PIXELS = (WIN_WIDTH * WIN_HEIGHT * 4);
+int32_t constexpr WIN_HEIGHT = 720;
+int32_t constexpr WIN_WIDTH = 1280;
+int32_t constexpr N_PIXELS = (WIN_WIDTH * WIN_HEIGHT * 4);
 
 struct videoApp_t {
   plm_t *plm;
   bool wantsToQuit;
   uint64_t lastTime;
   uint8_t rgb_data[N_PIXELS] __attribute__((aligned(64)));
-  int winHeight;
-  int winWidth;
+  int32_t winHeight;
+  int32_t winWidth;
   uint64_t ttr[400][5];
-  int totalFramesCompleted = 0;
+  int32_t totalFramesCompleted = 0;
   FrameBuffer *fbPtr;
 };
 
 struct FrameRateInfo {
   double frameMs;
   double fps;
-  int totalFrames;
+  int32_t totalFrames;
   double totalTExp;
 } FrameRateInfo;
 
-int xVal = 100;
-static int nPrints = 0;
+int32_t xVal = 100;
+static int32_t nPrints = 0;
 
-template <typename T>
-void printN(T time, FrameBuffer &fb) {
+template <typename T> void printN(T time, FrameBuffer &fb) {
   etl::string<100> i_str;
   etl::string<100> n_str;
   etl::to_string(nPrints, i_str);
@@ -65,11 +64,11 @@ uint8_t fRgbData[N_PIXELS] __attribute__((aligned(64)));
 uint8_t newRgbData[N_PIXELS] __attribute__((aligned(64)));
 
 // assembly func defined in boot.s
-extern "C" int getEl();
+extern "C" int32_t getEl();
 
 plm_t plmHolder;
 videoApp_t app;
-int main() {
+int32_t main() {
   MiniUart mu = MiniUart();
   Timer t = Timer();
   FrameBuffer fb = FrameBuffer();
@@ -78,7 +77,7 @@ int main() {
 
   // let the gpu finish initializing
   auto waiter = Timer::now();
-  while (t.durationSince(waiter) < 1500000) {  // wait 1.5 sec
+  while (t.durationSince(waiter) < 1500000) { // wait 1.5 sec
     ;
   }
 
@@ -125,7 +124,7 @@ void createApp(videoApp_t *appPtr, plm_t *plmPtr) {
   appPtr->plm = plm_create_with_memory(soccer, soccer_sz, 0, plmPtr);
 
   plm_set_video_decode_callback(appPtr->plm, updateFrame, appPtr);
-  plm_set_loop(appPtr->plm, FALSE);  // don't loop video
+  plm_set_loop(appPtr->plm, FALSE); // don't loop video
   plm_set_audio_enabled(appPtr->plm, FALSE);
 
   FrameRateInfo.fps = plm_get_framerate(appPtr->plm);
@@ -200,8 +199,8 @@ void makeStatFile(uint64_t startTime, videoApp_t *self, Timer &t, MiniUart &mu,
   double avgPlmDec = 0;
 
   double durations[400][5];
-  int droppedFrames = 0;
-  for (int i = 0; i < self->totalFramesCompleted; i++) {
+  int32_t droppedFrames = 0;
+  for (int32_t i = 0; i < self->totalFramesCompleted; i++) {
     double ttplmd = t.toMilli(self->ttr[i][1] - self->ttr[i][0]);
     double ttrgb = t.toMilli(self->ttr[i][2] - self->ttr[i][1]);
     double ttf = t.toMilli(self->ttr[i][3] - self->ttr[i][2]);
@@ -229,7 +228,7 @@ void makeStatFile(uint64_t startTime, videoApp_t *self, Timer &t, MiniUart &mu,
      << "avg_total_time_to_display(ms),total_slow_frames,total_callbacks,"
      << "real_play_time(sec),actual_fps,total_video_frames,default_fps,max_"
         "frame_time(ms),correct_play_time(sec)\n";
-  for (int i = 0; i < self->totalFramesCompleted; i++) {
+  for (int32_t i = 0; i < self->totalFramesCompleted; i++) {
     etl::string<510> uartStr = "";
 
     etl::to_string(durations[i][0], uartStr, etl::format_spec().precision(6),

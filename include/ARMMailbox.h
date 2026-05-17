@@ -4,15 +4,15 @@
 #include "peripheralReg.h"
 
 class ARMMailbox {
- public:
-  unsigned int writeRead(unsigned char channel);
-  unsigned int read(unsigned char channel);
+public:
+  uint32_t writeRead(unsigned char channel);
+  uint32_t read(unsigned char channel);
   void write(unsigned char channel);
   // The buffer must be 16-byte aligned as only the upper 28 bits of the address
   // can be passed via the mailbox
-  volatile unsigned int __attribute__((aligned(16))) mbox[36];
+  volatile uint32_t __attribute__((aligned(16))) mbox[36];
 
- private:
+private:
   MMIO mmio;
   enum {
     VIDEOCORE_MBOX = (reg::PERIPHERAL_BASE + 0x0000B880),

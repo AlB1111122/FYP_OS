@@ -4,19 +4,19 @@
 
 uint64_t Timer::now() {
   uint64_t time = 0x0;
-  uint32_t hiCnt = *reinterpret_cast<volatile unsigned int*>(SYS_TIMER_CNT_HI);
-  uint32_t loCnt = *reinterpret_cast<volatile unsigned int*>(SYS_TIMER_CNT_LO);
+  uint32_t hiCnt = *reinterpret_cast<volatile uint32_t *>(SYS_TIMER_CNT_HI);
+  uint32_t loCnt = *reinterpret_cast<volatile uint32_t *>(SYS_TIMER_CNT_LO);
   // account for reading lower being delayed for whatever reason and appearing
   // very low
-  if (hiCnt < *reinterpret_cast<volatile unsigned int*>(SYS_TIMER_CNT_HI)) {
-    loCnt = 0xFFFFFEEE;  // arbitrary high time close to the end of its flip
+  if (hiCnt < *reinterpret_cast<volatile uint32_t *>(SYS_TIMER_CNT_HI)) {
+    loCnt = 0xFFFFFEEE; // arbitrary high time close to the end of its flip
   }
   // put the higher counter in the 1st 32 bits of time
   time = static_cast<uint64_t>(
-             *reinterpret_cast<volatile unsigned int*>(SYS_TIMER_CNT_HI))
+             *reinterpret_cast<volatile uint32_t *>(SYS_TIMER_CNT_HI))
              << 32 |
-         loCnt;  // add the contents of the counter low with
-                 // bitwise or
+         loCnt; // add the contents of the counter low with
+                // bitwise or
   return time;
 }
 
@@ -34,7 +34,7 @@ bool Timer::didCounterFlip(uint64_t earlier, uint64_t later) const {
   return later < earlier;
 }
 
-int Timer::getHertz() const { return this->SYS_TIMER_Hz; }
+int32_t Timer::getHertz() const { return this->SYS_TIMER_Hz; }
 
 double Timer::toSec(uint64_t time) const {
   lldiv_t divRes = lldiv(time, this->SYS_TIMER_Hz);

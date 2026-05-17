@@ -1,5 +1,5 @@
 #pragma once
 // allows the use of libm sqrt
-int __errno;
+int32_t __errno;
 
-extern "C" int *__errno(void);
+extern "C" int32_t *__errno(void);

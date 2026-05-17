@@ -5,7 +5,7 @@ extern "C" {
 #include "peripheralReg.h"
 
 class Timer {
- private:
+private:
   enum {
     SYS_TIMER_BASE = reg::MAIN_PERIPHERAL_BASE + 0x2003000,
     SYS_TIMER_CTRL = SYS_TIMER_BASE + 0x0,
@@ -16,13 +16,13 @@ class Timer {
     SYS_TIMER_CMP_2 = SYS_TIMER_BASE + 0x14,
     SYS_TIMER_CMP_3 = SYS_TIMER_BASE + 0x18
   };
-  int SYS_TIMER_Hz = 1000000;
+  int32_t SYS_TIMER_Hz = 1000000;
   bool didCounterFlip(uint64_t earlier, uint64_t later) const;
 
- public:
+public:
   static uint64_t now();
   uint64_t durationSince(uint64_t earlier) const;
-  int getHertz() const;
+  int32_t getHertz() const;
   double toSec(uint64_t time) const;
   double toMilli(uint64_t time) const;
 };

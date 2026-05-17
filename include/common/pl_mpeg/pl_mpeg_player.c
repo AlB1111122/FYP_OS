@@ -128,7 +128,7 @@ const char *const APP_FRAGMENT_SHADER_RGB =
 typedef struct {
   plm_t *plm;
   double last_time;
-  int wants_to_quit;
+  int32_t wants_to_quit;
 
   SDL_Window *window;
   SDL_AudioDeviceID audio_device;
@@ -139,7 +139,7 @@ typedef struct {
   GLuint vertex_shader;
   GLuint fragment_shader;
 
-  int texture_mode;
+  int32_t texture_mode;
   GLuint texture_y;
   GLuint texture_cb;
   GLuint texture_cr;
@@ -148,7 +148,8 @@ typedef struct {
   uint8_t *rgb_data;
 } app_t;
 
-app_t *app_create(const char *filename, int texture_mode, plm_t *plm_holder);
+app_t *app_create(const char *filename, int32_t texture_mode,
+                  plm_t *plm_holder);
 void app_update(app_t *self);
 void app_destroy(app_t *self);
 
@@ -160,7 +161,7 @@ void app_update_texture(app_t *self, GLuint unit, GLuint texture,
 void app_on_video(plm_t *player, plm_frame_t *frame, void *user);
 void app_on_audio(plm_t *player, plm_samples_t *samples, void *user);
 
-app_t *app_create(const char *filename, int texture_mode, plm_t *plm_ptr) {
+app_t *app_create(const char *filename, int32_t texture_mode, plm_t *plm_ptr) {
   app_t *self = (app_t *)malloc(sizeof(app_t));
   memset(self, 0, sizeof(app_t));
 
@@ -179,7 +180,7 @@ app_t *app_create(const char *filename, int texture_mode, plm_t *plm_ptr) {
     exit(1);
   }
 
-  int samplerate = plm_get_samplerate(self->plm);
+  int32_t samplerate = plm_get_samplerate(self->plm);
 
   SDL_Log("Opened %s - framerate: %f, samplerate: %d, duration: %f", filename,
           plm_get_framerate(self->plm), plm_get_samplerate(self->plm),
@@ -253,7 +254,7 @@ app_t *app_create(const char *filename, int texture_mode, plm_t *plm_ptr) {
     self->texture_cr = app_create_texture(self, 2, "texture_cr");
   } else {
     self->texture_rgb = app_create_texture(self, 0, "texture_rgb");
-    int num_pixels = plm_get_width(self->plm) * plm_get_height(self->plm);
+    int32_t num_pixels = plm_get_width(self->plm) * plm_get_height(self->plm);
     self->rgb_data = (uint8_t *)malloc(num_pixels * 3);
   }
 
@@ -310,9 +311,9 @@ void app_update(app_t *self) {
   self->last_time = current_time;
 
   // Seek using mouse position
-  int mouse_x, mouse_y;
+  int32_t mouse_x, mouse_y;
   if (SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-    int sx, sy;
+    int32_t sx, sy;
     SDL_GetWindowSize(self->window, &sx, &sy);
     seek_to = plm_get_duration(self->plm) * ((float)mouse_x / (float)sx);
   }
@@ -342,7 +343,7 @@ GLuint app_compile_shader(app_t *self, GLenum type, const char *source) {
   GLint success;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (!success) {
-    int log_written;
+    int32_t log_written;
     char log[256];
     glGetShaderInfoLog(shader, 256, &log_written, log);
     SDL_Log("Error compiling shader: %s.\n", log);
@@ -395,11 +396,11 @@ void app_on_audio(plm_t *mpeg, plm_samples_t *samples, void *user) {
 
   // Hand the decoded samples over to SDL
 
-  int size = sizeof(float) * samples->count * 2;
+  int32_t size = sizeof(float) * samples->count * 2;
   SDL_QueueAudio(self->audio_device, samples->interleaved, size);
 }
 
-int main(int argc, char *argv[]) {
+int32_t main(int32_t argc, char *argv[]) {
   if (argc < 2) {
     SDL_Log("Usage: pl_mpeg_player <file.mpg>");
     exit(1);
