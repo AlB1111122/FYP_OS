@@ -3,10 +3,10 @@
 CROSSCOMP_TOOLCHAIN_DIR = /usr/share/arm-gnu-toolchain-15.2.rel1-x86_64-aarch64-none-elf
 ETL_INSTALL_DIR = lib/etl-20.39.4
 
-SRC_DIR = src/platform/baremetal
+SRC_DIR = src/platform
 SRC_COMM_DIR = src/common
 OBJ_DIR = build/bm
-CFG_DIR = src/platform/baremetal/config
+CFG_DIR = src/platform/config
 
 #if changing optimization level only change OPTIMIZE_LEVEL. OP_FLAG is used so the code can tell if O3 is enabled the if handles it
 OP_FLAG =
